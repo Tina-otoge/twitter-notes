@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %}Notes | Twitter Notes{% endblock %}
+{% block content %}
+<div class="page-heading"><h1>Notes</h1><span class="privacy-label"><i class="bi bi-lock" aria-hidden="true"></i> Private</span></div>
+<form method="get" class="row g-2 mb-4" role="search" data-note-filters>
+  <div class="col-12 col-md-7"><label class="visually-hidden" for="search">Search notes</label><input class="form-control" id="search" type="search" name="q" value="{{ query }}" placeholder="Search handles or notes"></div>
+  <div class="col-12 col-md-5"><label class="visually-hidden" for="tag-filter">Filter by tag</label><select class="form-select" id="tag-filter" name="tag"><option value="">All tags</option>{% for tag in tags %}<option value="{{ tag.id }}" {% if tag_filter == tag.id %}selected{% endif %}>{{ tag.name }}</option>{% endfor %}</select></div>
+</form>
+<p class="alert alert-danger" role="alert" data-filter-error hidden></p>
+<div data-note-results aria-live="polite">
+<section aria-label="Saved notes" class="note-list">
+{% for note in notes %}
+  <article class="note-row">
+    <div class="note-identity">
+      <a class="profile-link" href="https://x.com/i/user/{{ note.user_id }}" target="_blank" rel="noopener noreferrer">@{{ note.username }} <i class="bi bi-arrow-up-right" aria-hidden="true"></i></a>
+      <div class="small text-secondary mt-2">ID {{ note.user_id }}</div>
+      <time class="small text-secondary" datetime="{{ note.updated_at }}">{{ note.updated_at }} UTC</time>
+    </div>
+    <div class="note-editor">
+      <form action="{{ url_for('front.edit_note', user_id=note.user_id) }}" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="username" value="{{ note.username }}">
+        <label class="visually-hidden" for="body-{{ note.user_id }}">Note for @{{ note.username }}</label>
+        <textarea class="form-control note-body" id="body-{{ note.user_id }}" name="body" rows="3" maxlength="10000">{{ note.body }}</textarea>
+        {% set assigned = note.tags | map(attribute='id') | list %}
+        <fieldset class="tag-options mt-3"><legend class="visually-hidden">Assigned tags</legend>
+          {% for tag in tags %}<label class="tag-choice"><input class="form-check-input" type="checkbox" name="tag_ids" value="{{ tag.id }}" {% if tag.id in assigned %}checked{% endif %}><span class="swatch" style="--tag-color: {{ tag.color }}"></span>{{ tag.name }}</label>{% endfor %}
+        </fieldset>
+        <div class="d-flex justify-content-end mt-3"><button class="btn btn-sm btn-dark"><i class="bi bi-check2" aria-hidden="true"></i> Save</button></div>
+      </form>
+      <form class="delete-note" action="{{ url_for('front.remove_note', user_id=note.user_id) }}" method="post" data-confirm="Delete this note and its tag assignments?">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button class="btn btn-sm btn-outline-danger icon-button" title="Delete note" aria-label="Delete note for @{{ note.username }}"><i class="bi bi-trash3" aria-hidden="true"></i></button>
+      </form>
+    </div>
+  </article>
+{% else %}
+  <div class="empty-state"><i class="bi bi-journal" aria-hidden="true"></i><h2>{{ 'No matching notes' if query or tag_filter else 'No notes yet' }}</h2></div>
+{% endfor %}
+</section>
+<nav class="d-flex justify-content-between mt-4" aria-label="Pagination">
+  <div>{% if page > 1 %}<a class="btn btn-outline-secondary" href="{{ url_for('front.index', page=page-1, q=query, tag=tag_filter or '') }}"><i class="bi bi-arrow-left" aria-hidden="true"></i> Previous</a>{% endif %}</div>
+  {% if has_next %}<a class="btn btn-outline-secondary" href="{{ url_for('front.index', page=page+1, q=query, tag=tag_filter or '') }}">Next <i class="bi bi-arrow-right" aria-hidden="true"></i></a>{% endif %}
+</nav>
+</div>
+{% endblock %}

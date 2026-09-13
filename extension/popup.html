@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Twitter Notes</title>
+  <link rel="stylesheet" href="popup.css">
+  <script src="popup.js" defer></script>
+</head>
+<body>
+  <header><h1>Twitter Notes</h1><span>Connection</span></header>
+  <form id="settings">
+    <label for="server">Server URL</label>
+    <input id="server" type="url" placeholder="https://notes.example.com" required>
+    <label for="token">API token</label>
+    <input id="token" type="password" autocomplete="off" spellcheck="false" required>
+    <label class="check"><input id="show-token" type="checkbox"> Show token</label>
+    <div class="actions"><button id="save" type="submit">Save &amp; connect</button><button id="disconnect" type="button">Disconnect</button></div>
+  </form>
+  <p id="status" role="status"></p>
+  <a id="dashboard" target="_blank" rel="noopener noreferrer" hidden>Open notes</a>
+</body>
+</html>

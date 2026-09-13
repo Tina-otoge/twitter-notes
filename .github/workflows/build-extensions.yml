@@ -1,0 +1,30 @@
+name: Build extensions
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'extension/**'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.14'
+      - name: Build Chrome and Firefox extensions
+        run: python extension/build.py
+      - name: Upload extension packages
+        uses: actions/upload-artifact@v7
+        with:
+          name: twitter-notes-extensions
+          path: dist/twitter-notes-*.zip
+          if-no-files-found: error
+          compression-level: 0

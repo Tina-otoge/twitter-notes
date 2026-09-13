@@ -1,0 +1,10 @@
+Flask>=3.1,<4
+SQLAlchemy>=2.0,<3
+alembic>=1.16,<2
+pydantic-settings>=2.10,<3
+PyJWT>=2.10,<3
+Authlib>=1.6,<2
+requests>=2.32,<3
+gunicorn>=23,<24
+pytest>=8,<10
+ruff>=0.12,<1

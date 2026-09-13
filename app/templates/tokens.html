@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}API Tokens | Twitter Notes{% endblock %}
+{% block content %}
+<div class="page-heading"><h1>API tokens</h1><span class="privacy-label"><i class="bi bi-key" aria-hidden="true"></i> Extension access</span></div>
+{% if new_token %}
+<section class="alert alert-success" aria-label="New API token">
+  <label class="form-label fw-semibold" for="new-token">New token (shown once)</label>
+  <div class="input-group"><input class="form-control font-monospace" id="new-token" readonly value="{{ new_token }}"><button class="btn btn-outline-success" type="button" data-copy="new-token" title="Copy token" aria-label="Copy token"><i class="bi bi-copy" aria-hidden="true"></i></button></div>
+  <div id="copy-status" class="small mt-2" role="status"></div>
+</section>
+{% endif %}
+<form action="{{ url_for('front.tokens') }}" method="post" class="d-flex flex-wrap align-items-end gap-2 pb-4 border-bottom">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <div class="flex-grow-1"><label for="token-name" class="form-label">Label (optional)</label><input class="form-control" id="token-name" name="name" maxlength="80" placeholder="e.g. Firefox on laptop"></div>
+  <button class="btn btn-dark"><i class="bi bi-plus-lg" aria-hidden="true"></i> Generate token</button>
+</form>
+<section aria-label="Active tokens">
+{% for token in tokens %}
+  {% set token_label = token.name or token.id %}
+  <div class="token-row">
+    <div class="min-width-zero"><h2 class="token-name">{{ token_label }}</h2><div class="small text-secondary"><code>{{ token.prefix }}...</code> <span class="token-date">Created {{ token.created_at }} UTC</span></div></div>
+    <form action="{{ url_for('front.revoke_token', token_id=token.id) }}" method="post" data-confirm="Revoke this token? Extensions using it will lose access immediately.">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button class="btn btn-outline-danger icon-button" title="Revoke token" aria-label="Revoke {{ token_label }}"><i class="bi bi-trash3" aria-hidden="true"></i></button>
+    </form>
+  </div>
+{% else %}<div class="empty-state"><i class="bi bi-key" aria-hidden="true"></i><h2>No active tokens</h2></div>{% endfor %}
+</section>
+{% endblock %}

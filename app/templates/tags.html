@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block title %}Tags | Twitter Notes{% endblock %}
+{% block content %}
+<div class="page-heading"><h1>Tags</h1><span class="text-secondary">{{ tags | length }} total</span></div>
+<form action="{{ url_for('front.tags') }}" method="post" class="d-flex flex-wrap gap-2 align-items-end pb-4 border-bottom">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <div class="flex-grow-1"><label class="form-label" for="tag-name">New tag</label><input class="form-control" id="tag-name" name="name" placeholder="Tag name" maxlength="50" required></div>
+  <div><label class="form-label" for="tag-color">Color</label><input class="form-control form-control-color" id="tag-color" type="color" name="color" value="#198754" title="Tag color"></div>
+  <button class="btn btn-dark"><i class="bi bi-plus-lg" aria-hidden="true"></i> Create tag</button>
+</form>
+<section aria-label="Your tags">
+{% for tag in tags %}
+  <div class="tag-row">
+    <form action="{{ url_for('front.edit_tag', tag_id=tag.id) }}" method="post" class="d-flex gap-2 flex-grow-1 align-items-center">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input class="form-control form-control-color flex-shrink-0" type="color" name="color" value="{{ tag.color }}" title="Color for {{ tag.name }}" aria-label="Color for {{ tag.name }}">
+      <input class="form-control" name="name" value="{{ tag.name }}" maxlength="50" aria-label="Tag name" required>
+      <button class="btn btn-outline-secondary icon-button" title="Save tag" aria-label="Save tag"><i class="bi bi-check2" aria-hidden="true"></i></button>
+    </form>
+    <form action="{{ url_for('front.delete_tag', tag_id=tag.id) }}" method="post" data-confirm="Delete this tag from all your notes?">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button class="btn btn-outline-danger icon-button" title="Delete tag" aria-label="Delete {{ tag.name }}"><i class="bi bi-trash3" aria-hidden="true"></i></button>
+    </form>
+  </div>
+{% else %}<div class="empty-state"><i class="bi bi-tags" aria-hidden="true"></i><h2>No tags yet</h2></div>{% endfor %}
+</section>
+{% endblock %}
