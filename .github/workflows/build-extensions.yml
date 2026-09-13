@@ -22,10 +22,17 @@ jobs:
           python-version: '3.14'
       - name: Build Chrome and Firefox extensions
         run: python extension/build.py
-      - name: Upload extension packages
+      - name: Upload Chrome extension
         uses: actions/upload-artifact@v7
         with:
-          name: twitter-notes-extensions
-          path: dist/twitter-notes-*.zip
+          name: twitter-notes-chrome
+          path: dist/twitter-notes-chrome.zip
+          if-no-files-found: error
+          compression-level: 0
+      - name: Upload Firefox extension
+        uses: actions/upload-artifact@v7
+        with:
+          name: twitter-notes-firefox
+          path: dist/twitter-notes-firefox.zip
           if-no-files-found: error
           compression-level: 0
