@@ -36,9 +36,10 @@ def create_app(settings: Settings | None = None):
     def http_error(error):
         if flask.request.path.startswith("/api/"):
             return flask.jsonify(error=error.description), error.code
-        return flask.render_template(
-            "error.html", error=error.description
-        ), error.code
+        return (
+            flask.render_template("error.html", error=error.description),
+            error.code,
+        )
 
     @app.errorhandler(ValidationError)
     def validation_error(error):
